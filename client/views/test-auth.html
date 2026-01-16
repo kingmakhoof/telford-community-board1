@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Test - Telford Community Board</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            margin-bottom: -2px;
+        }
+        
+        .form-container {
+            display: none;
+        }
+        
+        .form-container.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .result.active {
+            display: block;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .token-display {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .token-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .token-value {
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-all;
+            color: #555;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .actions button {
+            flex: 1;
+        }
+        
+        .copy-btn {
+            background: #4CAF50;
+        }
+        
+        .test-btn {
+            background: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Authentication Test</h1>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('register')">Register</div>
+            <div class="tab" onclick="switchTab('login')">Login</div>
+            <div class="tab" onclick="switchTab('profile')">Profile</div>
+            <div class="tab" onclick="switchTab('password')">Password</div>
+        </div>
+        
+        <!-- Register Form -->
+        <div id="register-form" class="form-container active">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="register-username" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="register-email" placeholder="Enter email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="register-password" placeholder="Enter password">
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="register-confirm" placeholder="Confirm password">
+            </div>
+            <div class="form-group">
+                <label>Display Name (Optional)</label>
+                <input type="text" id="register-display" placeholder="Enter display name">
+            </div>
+            <button onclick="register()">Register</button>
+            <div id="register-result" class="result"></div>
+        </div>
+        
+        <!-- Login Form -->
+        <div id="login-form" class="form-container">
+            <div class="form-group">
+                <label>Email or Username</label>
+                <input type="text" id="login-identifier" placeholder="Enter email or username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="login-password" placeholder="Enter password">
+            </div>
+            <button onclick="login()">Login</button>
+            <div id="login-result" class="result"></div>
+            
+            <div id="token-display" class="token-display" style="display: none;">
+                <div class="token-label">Access Token:</div>
+                <div class="token-value" id="access-token"></div>
+                <div class="actions">
+                    <button class="copy-btn" onclick="copyToken()">Copy Token</button>
+                    <button class="test-btn" onclick="testProtected()">Test Protected Route</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Form -->
+        <div id="profile-form" class="form-container">
+            <div class="form-group">
+                <label>Display Name</label>
+                <input type="text" id="profile-display" placeholder="Enter display name">
+            </div>
+            <div class="form-group">
+                <label>Bio</label>
+                <input type="text" id="profile-bio" placeholder="Enter bio">
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="profile-location" placeholder="Enter location">
+            </div>
+            <div class="actions">
+                <button onclick="getProfile()">Get Profile</button>
+                <button onclick="updateProfile()">Update Profile</button>
+            </div>
+            <div id="profile-result" class="result"></div>
+        </div>
+        
+        <!-- Password Form -->
+        <div id="password-form" class="form-container">
+            <div class="form-group">
+                <label>Current Password</label>
+                <input type="password" id="current-password" placeholder="Enter current password">
+            </div>
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="new-password" placeholder="Enter new password">
+            </div>
+            <div class="form-group">
+                <label>Confirm New Password</label>
+                <input type="password" id="confirm-password" placeholder="Confirm new password">
+            </div>
+            <div class="actions">
+                <button onclick="changePassword()">Change Password</button>
+                <button onclick="forgotPassword()">Forgot Password</button>
+            </div>
+            <div id="password-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api/auth';
+        let accessToken = localStorage.getItem('accessToken') || '';
+        
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update forms
+            document.querySelectorAll('.form-container').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-form`).classList.add('active');
+        }
+        
+        // Show result
+        function showResult(elementId, data, isError = false) {
+            const resultDiv = document.getElementById(elementId);
+            resultDiv.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+            resultDiv.className = `result ${isError ? 'error' : 'success'} active`;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                resultDiv.classList.remove('active');
+            }, 5000);
+        }
+        
+        // Register function
+        async function register() {
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm').value;
+            const displayName = document.getElementById('register-display').value;
+            
+            if (password !== confirmPassword) {
+                showResult('register-result', 'Passwords do not match', true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, confirmPassword, displayName })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('register-result', data);
+                    // Switch to login tab
+                    setTimeout(() => {
+                        document.querySelector('.tab:nth-child(2)').click();
+                        document.getElementById('login-identifier').value = email;
+                        document.getElementById('login-password').value = password;
+                    }, 1000);
+                } else {
+                    showResult('register-result', data, true);
+                }
+            } catch (error) {
+                showResult('register-result', `Error: ${error.message}`, true);
+            }
+        }
+        
+        // Login function
+        async function login() {
+            const identifier = document.getElementById('login-identifier').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Determine if identifier is email or username
+            const isEmail = identifier.includes('@');
+            const body = isEmail ? 
+                { email: identifier, password } : 
+                { username: identifier, password };
+            
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('login-result', data);
+                    accessToken = data.data.tokens.accessToken;
+                    localStorage.setItem('accessToken', accessToken);
+                    
+                    // Show token display
+                    document.getElementById('token-display').style.display = 'block';
+                    document.getElementById('access-token').textContent = accessToken;
+                } else {
+                    showResult('login-result', data, true);
+                }
+            } catch (error) {
+                showResult('login-result', `Error: ${error.message}`, true);
+            }
+        }
+        
+        // Copy token to clipboard
+        function copyToken() {
+            navigator.clipboard.writeText(accessToken).then(() => {
+                alert('Token copied to clipboard!');
+            });
+        }
+        
+        // Test protected route
+        async function testProtected() {
+            if (!accessToken) {
+                showResult('login-result', 'No access token. Please login first.', true);
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/protected', {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                
+                const data = await response.json();
+                showResult('login-result', data);
+            } catch (error) {
+                showResult('login-result', `Error: ${error.message}`, true);
+            }
+        }
+        
+        // Get profile
+        async function getProfile() {
+            if (!accessToken) {
+                showResult('profile-result', 'Please login first', true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/me`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Populate form with current data
+                    document.getElementById('profile-display').value = data.data.user.displayName || '';
+                    document.getElementById('profile-bio').value = data.data.user.bio || '';
+                    document.getElementById('profile-location').value = data.data.user.location || '';
+                    showResult('profile-result', data);
+                } else {
+                    showResult('profile-result', data, true);
+                }
+            } catch (error) {
+                showResult('profile-result', `Error: ${error.message}`, true);
+            }
+        }
+        
+        // Update profile
+        async function updateProfile() {
+            if (!accessToken) {
+                showResult('profile-result', 'Please login first', true);
+                return;
+            }
+            
+            const displayName = document.getElementById('profile-display').value;
+            const bio = document.getElementById('profile-bio').value;
+            const location = document.getElementById('profile-location').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/me`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ displayName, bio, location })
+                });
+                
+                const data = await response.json();
+                showResult('profile-result', data, !response.ok);
+            } catch (error) {
+                showResult('profile-result', `Error: ${error.message}`, true);
+            }
+        }
+        
+        // Change password
+        async function changePassword() {
+            if (!accessToken) {
+                showResult('password-result', 'Please login first', true);
+                return;
+            }
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                showResult('password-result', 'New passwords do not match', true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/change-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+                });
+                
+                const data = await response.json();
+                showResult('password-result', data, !response.ok);
+                
+                // Clear form
+                if (response.ok) {
+                    document.getElementById('current-password').value = '';
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('confirm-password').value = '';
+                }
+            } catch (error) {
+                showResult('password-result', `Error: ${error.message}`, true);
+            }
+        }
+        
+        // Forgot password
+        async function forgotPassword() {
+            const email = prompt('Enter your email address:');
+            if (!email) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/forgot-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                alert(data.message);
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+        
+        // Auto-populate login if token exists
+        if (accessToken) {
+            document.getElementById('token-display').style.display = 'block';
+            document.getElementById('access-token').textContent = accessToken;
+            document.querySelector('.tab:nth-child(2)').click();
+        }
+    </script>
+</body>
+</html>
