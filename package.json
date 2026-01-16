@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "telford-community-board",
   "version": "1.0.0",
@@ -44,3 +45,51 @@
     "node": ">=18.0.0"
   }
 }
+=======
+{
+  "name": "telford-community-board",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "description": "A collaborative community board platform for Telford",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node start.js",
+    "dev": "nodemon start.js",
+    "test": "jest",
+    "db:create": "node server/scripts/createDatabase.js",
+    "db:migrate": "npx sequelize-cli db:migrate",
+    "db:seed": "npx sequelize-cli db:seed:all"
+  },
+  "keywords": [
+    "community",
+    "collaboration",
+    "board",
+    "telford"
+  ],
+  "author": "Amir",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-pg-simple": "^9.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1",
+    "express-session": "^1.17.3",
+    "express-validator": "^7.3.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.11.3",
+    "sequelize": "^6.33.0",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "sequelize-cli": "^6.6.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+>>>>>>> f9c04158b4baadce1605677f2d3b85ebb8762984
